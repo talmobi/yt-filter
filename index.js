@@ -63,6 +63,7 @@ function search (query, filters, done) {
         for (var i = 0; i < _songs.length; i++) {
           var song = _songs[i];
           if (shouldSkipSong( song, filters )) {
+            console.log("skipping song: " + song.title);
             _songs.splice(i--, 1);
           }
         }
@@ -114,6 +115,7 @@ function shouldSkipSong (song, filters) {
     var str = val.toUpperCase();
     return title.indexOf(str) >= 0;
   });
+  if (filters.exclude.length <= 0) excludes = false; // ignore excludes
 
   /* this is an && find (not very useful actually)
   var includes = filters.include.every(function (val, ind, arr) {
@@ -123,15 +125,16 @@ function shouldSkipSong (song, filters) {
   */
 
   // this is an || find, which makes much more sense
-  var includes = filters.include.find(function (val, ind, arr) {
+  var includes = !filters.include.find(function (val, ind, arr) {
     var str = val.toUpperCase();
     return title.indexOf(str) >= 0;
   });
+  if (filters.include.length <= 0) includes = false; // ignore includes
 
   return (
       duration < filters.min_duration ||
       duration > filters.max_duration ||
-      excludes || !includes || skip_playlist
+      excludes || includes || skip_playlist
       );
 };
 
