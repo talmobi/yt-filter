@@ -1,6 +1,5 @@
 var cheerio = require('cheerio');
 var request = require('request');
-var util = require('util');
 
 var default_filters = {
   min_duration: 10, // in seconds
@@ -85,7 +84,6 @@ function search (query, filters, done) {
     });
   };
   next(page);
-
 }
 
 function findSongs(url, page, done) {
@@ -111,31 +109,36 @@ function shouldSkipSong (song, filters) {
   var duration = song.duration.seconds || song.duration;
   var title = song.title.toUpperCase();
 
-  var excludes = filters.exclude.find(function (val, ind, arr) {
-    var str = val.toUpperCase();
-    return title.indexOf(str) >= 0;
-  });
-  if (filters.exclude.length <= 0) excludes = false; // ignore excludes
+  var excludes = false;
+  if (filters.exclude.length > 0) {
+    excludes = !!filters.exclude.find(function (val, ind, arr) {
+      var str = val.toUpperCase();
+      return title.indexOf(str) >= 0;
+    });
+  }
 
-  /* this is an && find (not very useful actually)
+  /* this is an && find, meaning that they ALL have to match simultaneously
+   * (not very useful actually)
   var includes = filters.include.every(function (val, ind, arr) {
     var str = val.toUpperCase();
     return title.indexOf(str) >= 0;
   });
   */
 
-  // this is an || find, which makes much more sense
-  var includes = !filters.include.find(function (val, ind, arr) {
-    var str = val.toUpperCase();
-    return title.indexOf(str) >= 0;
-  });
-  if (filters.include.length <= 0) includes = false; // ignore includes
+  // this is an || find, meaning only one of them has to match, which makes much more sense
+  var includes = false;
+  if (filters.include.length > 0) {
+    includes = !filters.include.find(function (val, ind, arr) {
+      var str = val.toUpperCase();
+      return title.indexOf(str) >= 0;
+    });
+  }
 
   return (
-      duration < filters.min_duration ||
-      duration > filters.max_duration ||
-      excludes || includes || skip_playlist
-      );
+    duration < filters.min_duration ||
+    duration > filters.max_duration ||
+    excludes || includes || skip_playlist
+  );
 };
 
 // parse the plain text response body with jsom to pin point song information
@@ -143,11 +146,8 @@ function parseResponse (responseText, done) {
   console.log("parsing response with cheerio");
 
   $ = cheerio.load(responseText);
-
   var titles = $('.yt-lockup-title');
-
   console.log("titles length: " + titles.length);
-
   var songs = [];
 
   for (var i = 0; i < titles.length; i++) {
@@ -252,4 +252,3 @@ function listSearch (query) {
 module.exports = {
   search: search,
 };
-
