@@ -1,14 +1,22 @@
 var cheerio = require('cheerio');
 var request = require('request');
 
-var default_filters = {
+var yt_search_query_uri =  "https://www.youtube.com/results?search_query=";
+
+/** Default filters */
+var _filters = {
   min_duration: 10, // in seconds
   max_duration: 60 * 7, // in seconds
   include: [],
   exclude: [],
 };
 
-var yt_search_query_uri =  "https://www.youtube.com/results?search_query=";
+// settings
+var _opts = {
+  min_songs: 5,
+  max_requests: 5,
+  ignore_playlists: true
+};
 
 var console = {
   log: function (str) {
@@ -16,21 +24,27 @@ var console = {
   }
 };
 
-// settings
-var min_songs = 10;
-var max_songs = 30;
-var max_requests = 5;
-var skip_playlists = true;
+/**
+ * Provide custom search options.
+ */
+function opts (opts) {
+  for (key in opts) {
+    _opts[key] = opts[key];
+  };
+};
 
+/**
+ * 
+ */
 function search (query, filters, done) {
   var query = query;
   if (typeof filters === 'function') {
     done = filters;
-    filters = default_filters;
+    filters = _filters;
   } else {
-    for (key in default_filters) {
+    for (key in _filters) {
       if (!filters[key]) {
-        filters[key] = default_filters[key];
+        filters[key] = _filters[key];
       }
     };
     console.log(filters);
@@ -43,7 +57,7 @@ function search (query, filters, done) {
   var url = yt_search_query_uri + q.join('+');
 
   var songs = []; // found songs
-  var max_loops = max_requests; // max amount of recursive calls
+  var max_loops = _opts.max_requests; // max amount of recursive calls
   var loops = 0;
 
   // page number (youtube seach query parameter)
@@ -70,7 +84,7 @@ function search (query, filters, done) {
         console.log("found " + _songs.length + " songs on loop: " + loops + "/" + max_loops);
         songs = songs.concat(_songs);
 
-        if (songs.length < min_songs && _songs.length > 0 && loops < max_loops) {
+        if (songs.length < _opts.min_songs && _songs.length > 0 && loops < max_loops) {
           console.log("minimum number of songs not found -> doing another request");
           // call the function recursively until max recursive calls are reached
           // or we've a minimum required amount of songs
@@ -104,7 +118,7 @@ function findSongs(url, page, done) {
 function shouldSkipSong (song, filters) {
   var filters = filters || GLOBAL.filters;
 
-  var skip_playlist = skip_playlists && song.url.indexOf('list') >= 0;
+  var ignore_playlists = _opts.ignore_playlists && song.url.indexOf('list') >= 0;
 
   var duration = song.duration.seconds || song.duration;
   var title = song.title.toUpperCase();
@@ -137,7 +151,7 @@ function shouldSkipSong (song, filters) {
   return (
     duration < filters.min_duration ||
     duration > filters.max_duration ||
-    excludes || includes || skip_playlist
+    excludes || includes || ignore_playlists
   );
 };
 
@@ -249,6 +263,9 @@ function listSearch (query) {
   });
 };
 
-module.exports = {
-  search: search,
+// exports
+module.exports = function (query, filters, done) {
+  search(query, filters, done);
 };
+module.exports.opts = opts;
+module.exports.search = search;

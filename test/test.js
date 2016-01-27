@@ -1,4 +1,4 @@
-var yth = require('../index.js');
+var ytf = require('../index.js');
 var assert = require('assert');
 
 describe('yt-hunter tests', function () {
@@ -10,7 +10,7 @@ describe('yt-hunter tests', function () {
         exclude: ['nothing']
       };
 
-      yth.search('metallica', filters, function (err, songs) {
+      ytf.search('metallica', filters, function (err, songs) {
         if (err) throw err;
         if (songs.length <= 0) throw new Error("no songs found.");
 
@@ -32,7 +32,7 @@ describe('yt-hunter tests', function () {
         exclude: ['superman', 'batman']
       };
 
-      yth.search('theme', filters, function (err, songs) {
+      ytf.search('theme', filters, function (err, songs) {
         if (err) throw err;
         if (songs.length <= 0) throw new Error("no songs found.");
 
@@ -55,7 +55,7 @@ describe('yt-hunter tests', function () {
         include: ['theme']
       };
 
-      yth.search('pokemon music', filters, function (err, songs) {
+      ytf('pokemon music', filters, function (err, songs) {
         if (err) throw err;
         if (songs.length <= 0) throw new Error("no songs found.");
 
