@@ -1,0 +1,33 @@
+{
+  "name": "yt-hunter",
+  "version": "0.0.0",
+  "description": "bulk search and filter youtube results - find what you're looking for.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/talmobi/yt-hunter.git"
+  },
+  "keywords": [
+    "yt",
+    "youtube",
+    "search",
+    "filter",
+    "find"
+  ],
+  "author": "talmobi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/talmobi/yt-hunter/issues"
+  },
+  "homepage": "https://github.com/talmobi/yt-hunter#readme",
+  "dependencies": {
+    "cheerio": "^0.19.0",
+    "request": "^2.67.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.4.2"
+  }
+}
