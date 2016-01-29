@@ -1,8 +1,8 @@
 var ytf = require('../index.js');
 var assert = require('assert');
 
-describe('yt-hunter tests', function () {
-  this.timeout(4000);
+describe('yt-filter tests', function () {
+  this.timeout(6000);
 
   describe('searching "metallica" songs, excluding "nothing"', function () {
     it('should return without errors', function (done) {

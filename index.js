@@ -15,7 +15,8 @@ var _filters = {
 var _opts = {
   min_songs: 5,
   max_requests: 5,
-  ignore_playlists: true
+  ignore_playlists: true,
+  ignore_accounts: true
 };
 
 var console = {
@@ -119,6 +120,7 @@ function shouldSkipSong (song, filters) {
   var filters = filters || GLOBAL.filters;
 
   var ignore_playlists = _opts.ignore_playlists && song.url.indexOf('list') >= 0;
+  var ignore_accounts = _opts.ignore_accounts && song.url.indexOf('user') >= 0;
 
   var duration = song.duration.seconds || song.duration;
   var title = song.title.toUpperCase();
@@ -151,7 +153,7 @@ function shouldSkipSong (song, filters) {
   return (
     duration < filters.min_duration ||
     duration > filters.max_duration ||
-    excludes || includes || ignore_playlists
+    excludes || includes || ignore_playlists || ignore_playlists
   );
 };
 
