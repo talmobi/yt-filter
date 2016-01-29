@@ -153,7 +153,7 @@ function shouldSkipSong (song, filters) {
   return (
     duration < filters.min_duration ||
     duration > filters.max_duration ||
-    excludes || includes || ignore_playlists || ignore_playlists
+    excludes || includes || ignore_playlists || ignore_accounts
   );
 };
 
